@@ -1,0 +1,136 @@
+---
+title: "Linear Models. Open Book CAT"
+author: "Getrude Gichuhi"
+date: "08/04/2022"
+output:
+  word_document: default
+  pdf_document: default
+Id No: '106218'
+---
+
+Loading the DataSet and viewing it
+
+```{r }
+library(readxl)
+df <- read_excel("Cat1.xlsx")
+View(df)
+```
+(a) Split the data set into 75% training set and 25% test set.
+
+```{r }
+# 75% of the sample size is the Training set 
+df_t <- floor(0.75 * nrow(df))
+
+#setting the seed
+set.seed(123)
+training <- sample(seq_len(nrow(df)), size = df_t)
+
+train <- df[training, ]
+test <- df[-training, ]
+```
+
+## Least squares 
+b) Fit a linear model using least squares on the training set, and report the test error obtained.
+
+```{r}
+library(caret)
+library(tidyverse)
+library(glmnet)
+library(dplyr)
+```
+
+```{r }
+model = lm(Response~., data = train)
+
+summary(model)
+
+```
+
+```{r}
+#Fitting training Model on the test set
+lm_pred=predict(model,new=test)
+
+#Calculating Accuracy 
+LSE=mean((test$Response-lm_pred)^2)
+
+#Print
+print(LSE)
+```
+The Test error of the linear model fit is 99.116668
+
+
+
+c) Fit a ridge regression model on the training set, with λ chosen by cross-validation. Report the test error obtained.
+
+```{r}
+set.seed(1)
+
+#Matrices
+train_mat = model.matrix(Response~., data = train)
+test_mat = model.matrix(Response~., data = test)
+
+#Choose the lambda using cross-validation
+
+cv = cv.glmnet(train_mat, train$Response, alpha=0)
+plot(cv)
+lam = cv$lambda.min
+
+lam
+```
+
+```{r}
+#Fitting the ridge regression
+
+ridge_mod = glmnet(train_mat,train$Response, alpha =0)
+
+#Make Predictions 
+ridge_pred = predict(ridge_mod, s=lam,newx = test_mat)
+
+#Calculating test error
+mean((ridge_pred - test$Response)^2)
+
+```
+The test error of the ridge regression fit with lambda chosen by cross-validation is 224.7245, which is higher that the linear model error.
+
+
+d) Fit a lasso model on the training set, with λ chosen by cross validation. Report the test error obtained, along with the number of non-zero coefficient estimates.
+
+
+```{r}
+#Choosing the lambda to be used for the cross-validation 
+
+set.seed(1)
+
+cv2 = cv.glmnet(train_mat, train$Response, alpha=1)
+
+plot(cv2)
+lam2 = cv2$lambda.min
+lam2
+```
+
+
+```{r}
+#Fitting the Lasso model
+
+lasso = glmnet(train_mat, train$Response, alpha =1)
+
+lasso_1= predict(lasso, s=lam2, newx=test_mat)
+
+mean((lasso_1 - test$Response)^2)
+
+```
+
+The test error of the lasso model fit with a lambda chosen by cross-validation is 106.7259. This error is between the least square error slightly higher but lower than the ridge regression error. 
+
+
+e) Comment on the results obtained. How accurately can we predict the response variable? Is there much difference among the test errors resulting from these three approaches? Present and discuss results for the approaches
+
+The Model performance are as follows
+i) Linear Model using least square error is 99.11668
+ii) Ridge Regression with lambda chosen by cross-validation is 224.7245
+iii) Lasso model with lambda chosen by cross validation is 106.7259
+
+Therefore lasso model performs the best, while ridge regression model performs the worst. 
+
+
+
