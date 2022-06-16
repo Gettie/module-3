@@ -1,0 +1,72 @@
+---
+title: "Exponential MLE using Newton-Raphson"
+author: "092975 Igobwa Alvin Mugwe, 145054 Kyalo Henry Muoki, 145053 Eunice Mutahi,
+106218 Getrude Gichuhi"
+date: "3/24/2022"
+output: pdf_document
+---
+
+```{r}
+#tinytex::install_tinytex()
+library(tinytex)
+```
+
+
+the exponential pdf is given by $$\begin{equation} f_X(x) = \begin{cases}\lambda \exp(-\lambda x) & x > 0 \\ 0 & \text{otherwise.} \end{cases} \end{equation}$$ 
+
+Finding the likelihood then becomes:$$\begin{equation} \prod_{i=1}^{n} f_X(x;\lambda)=\begin{cases}\prod_{i=1}^{n}\lambda \exp^{(-\lambda x)} & x > 0 \\ 0 & \text{otherwise.}\end{cases}\end{equation}$$
+
+The above equation then opens up to be $$\lambda^{n} \exp(-\lambda*\sum{xi} $$
+
+Introducing logarithms the equation becomes:
+$$n\ln{\lambda + -\lambda\sum{xi}} $$
+
+The score function now becomes:
+
+$$\frac{d}{d\lambda} = \frac{n}{\lambda} - \sum{xi}=0 $$
+Given that we have now obatined teh score function, we can now use this to create the Newton Raphson but first we need the information function and as we know $$ I(\lambda) = -S'(\lambda)$$
+
+
+As such $$I(\lambda) = -[-\frac{n}{\lambda^2}] = \frac{n}{\lambda^2}$$
+
+
+```{r}
+exp.mle <- function(x,start,eps=1.e-8,max.iter=100){
+  if (missing(start)) start <- median(x)
+  lambda <- start
+  n <- length(x)
+  score <- (n/lambda) - sum(x)
+  iter <- 1
+  conv <- T
+  while (abs(score)>eps && iter<=max.iter){
+    info <- n/(lambda**2)
+    lambda <- lambda + score/info
+    iter <- iter + 1
+    score <-( n/lambda) - sum(x)
+  }
+  if (abs(score)>eps) {
+    print("No Convergence")
+    conv <- F
+  }
+  loglik <- n*log(lambda) - lambda*sum(x)
+  info <- n/lambda**2
+  r <- list(lambda=lambda,loglik=loglik,info=info,convergence=conv)
+  r
+}
+
+
+MLE_exp = exp.mle(rexp(100))
+MLE_exp
+```
+
+
+Confidence Interval for the lambda obtained
+```{r}
+upper_bound = MLE_exp$lambda + 1.96*(1/MLE_exp$info)**(0.5)
+upper_bound
+lower_bound = MLE_exp$lambda - 1.96*(1/MLE_exp$info)**(0.5)
+lower_bound
+```
+$$\text{The confidence bound for the lambda value is found between 1.334121 and 0.8968503 ie} \\
+\lambda \approx 1.334121 \pm 0.8968503  $$
+
