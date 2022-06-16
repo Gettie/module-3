@@ -1,0 +1,87 @@
+---
+title: "Assignment 2 - Linear Models"
+author: "Getrude Gichuhi"
+date: '2022-04-08'
+output: pdf_document
+---
+Use the dataset attached to do model selection.
+
+Use R Markdown for your submissions. 
+
+Ensure you change the variable Region to factor variable before model fitting. 
+
+Use the variable name power as your response variable and select the best model using AIC
+
+```{r}
+# install.packages("readxl")
+```
+
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(lattice)
+```
+
+Loading the DataSet
+```{r}
+df <- read_excel("Dataset2.xlsx")
+print(head(df))
+```
+
+
+```{r}
+summary(df)
+```
+
+Change the Region Variable to the factor variable 
+
+```{r}
+df$Region <- as.factor(df$Region)
+```
+
+```{r}
+summary (df)
+```
+Build a Model
+```{r}
+lm_power = lm(Power~ .,data=df)
+summary(lm_power)
+```
+
+Rates shows no estimates or statistics therefore it's wise to remove it. 
+
+```{r}
+df1 = subset(df,select = -c(Rates))
+
+lm_power =  lm(Power~ ., data=df1)
+summary(lm_power)
+```
+
+Model selection of AIC 
+1. Forward Selection 
+2. Backward Selection 
+3. Mixed Selection 
+
+```{r}
+step(lm_power, direction = "forward")
+```
+The forward stepwise selection shows a model of AIC = -151.08 which includes Power ~ Time + Homes + Region + Sequence. Power as the response Variable.
+
+
+```{r}
+step(lm_power, direction = "backward")
+```
+
+The Backward Stepwise selection shows a model of AIC = -152.63 which includes Power ~ Homes + Sequence. 
+
+
+```{r}
+step(lm_power, direction = "both")
+```
+
+The mixed selcetion shows an AIC of -152.63. 
+
+The best model to use is the forward selection which has an AIC of -151.08
+
