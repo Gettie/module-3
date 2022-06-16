@@ -1,0 +1,139 @@
+---
+title: "Assignment 3"
+author: "Getrude Gichuhi"
+date: "2022-05 - 14"
+output: pdf_document
+---
+
+Use the dataset attached to do various extensions of Linear regression. 
+
+Use R Markdown for your submissions. 
+
+Ensure you use sales as the response variable for model fitting. 
+
+Try variety of extensions i.e. Interaction, polynomial, combinations of both interaction and polynomial. 
+
+You can choose any of the covariates. Ensure you interpret your results.
+
+
+```{r}
+#install.packages("readxl")
+```
+Loading Libraries
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(lattice)
+```
+
+
+Load the Dataset 
+
+
+```{r}
+df <- read_excel("Sales_Dataset.xlsx")
+print(head(df))
+```
+
+
+```{r cars}
+summary(df)
+```
+
+
+```{r}
+plot(df)
+```
+ 
+ Interaction Models
+ 
+ 
+```{r}
+lm_Sales = lm(Sales~ .,data=df)
+summary(lm_Sales)
+
+```
+Interaction of TV and Radio 
+```{r}
+lm_Sales1 = lm(Sales ~ TV* Radio, data=df)
+summary(lm_Sales1)
+```
+
+interaction of TV and Newspaper
+```{r}
+lm_Sales2 = lm(Sales ~ TV* Newspaper, data=df)
+summary(lm_Sales2)
+```
+
+Interaction of TV and Billboard
+```{r}
+lm_Sales3 = lm(Sales ~ TV* BillBoard, data=df)
+summary(lm_Sales3)
+```
+
+Interaction of Tv, Billboard, Radio and Newspaper
+
+```{r}
+lm_sales4 = lm(Sales ~ TV*BillBoard*Radio*Newspaper, data=df)
+summary(lm_sales4)
+```
+
+Polynomial
+```{r}
+scatter.smooth(x=df$TV, y=df$Radio, main="TV & Radio") 
+```
+
+```{r}
+tv_lm = lm(Sales ~poly(TV,degree=2,raw = TRUE), data=df)
+
+summary(tv_lm)
+```
+The significance level has a 99.47% chance, which falls close to the empirical rule, but not at the 99.7%.
+```{r}
+News_lm = lm(Sales ~poly(Newspaper,degree=2,raw = TRUE), data=df)
+
+summary (News_lm)
+```
+The significance level is at 99.92%. 
+```{r}
+radio_lm = lm(Sales ~poly(Radio,degree=2,raw = TRUE), data=df)
+
+summary(radio_lm)
+```
+
+```{r}
+Bill_lm = lm(Sales ~poly(BillBoard,degree=2,raw = TRUE), data=df)
+
+summary(Bill_lm)
+```
+
+```{r}
+mse_tv<-lm(Sales ~ TV, data=df)
+
+mean(mse_tv$residuals^2) 
+
+#summary(mse_tv)
+```
+
+```{r}
+mse_radio<-lm(Sales ~ Radio, data=df)
+
+mean(mse_radio$residuals^2) 
+```
+
+```{r}
+mse_news<-lm(Sales ~ Newspaper, data=df)
+
+mean(mse_news$residuals^2) 
+```
+```{r}
+mse_Bill<-lm(Sales ~ BillBoard, data=df)
+
+mean(mse_Bill$residuals^2) 
+```
+The best polynomial regression to use is Billboard since it has a small error and the adjusted R-Squared is equal to 1. 
+
+
+
+
