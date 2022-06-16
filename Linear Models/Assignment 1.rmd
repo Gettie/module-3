@@ -1,0 +1,141 @@
+---
+title: "Assignment 1 Linear Models"
+author: "Getrude Gichuhi"
+date: "28/03/2022"
+output: pdf_document
+---
+
+Use Salaries as your response variable. Ensure you convert gender and region to factor variables
+
+1) Use R markdown and submit a PDF document
+
+2) Explore the data by doing relevant histograms, boxplots, scatter plots etc and interpret your results
+
+3) Fit a linear regression with salary as response variable and all the rest at exploratory variables
+
+4) Interpret all your output
+
+```{r}
+#install.packages("readxl")
+```
+
+load the libraries to use
+
+```{r}
+library("readxl")
+```
+loading the dataset
+
+```{r}
+df <- read_excel("Data1.xlsx")
+print(head(df))
+```
+```{r}
+summary(df)
+```
+
+
+Scatter Plots
+```{r}
+#plot(df$`Years of Experience`, df$Salaries)
+
+scatter.smooth(x=df$`Years of Experience`, y=df$Salaries, main="Salaries ~ Experience") 
+```
+Box Plots
+
+```{r}
+boxplot(df$Salaries)
+```
+
+
+```{r}
+boxplot(df$Salaries,
+main = "Salaries and Years of experience",
+xlab = "`Years of Experience`",
+ylab = "Salaries",
+col = "orange",
+border = "brown",
+horizontal = TRUE,
+notch = TRUE
+)
+```
+Histogram
+
+```{r}
+Salaries <- df$Salaries
+hist(Salaries)
+```
+
+
+
+```{r}
+# histogram with added parameters
+hist(Salaries,
+main="Maximum Salaries",
+xlab="`Years of Experience`",
+ylab= "Salaries",
+col="darkmagenta",
+freq=FALSE
+)
+```
+
+
+Salaries increases with the number of years of experience. The more experienced, the more salary is earned. 
+
+```{r}
+#plot(df$Age, df$Salaries)
+
+scatter.smooth(x=df$Age, y=df$Salaries, main="Salaries ~ Age")
+```
+
+```{r}
+boxplot(df$Salaries,
+main = "Salaries and Years of experience",
+xlab = "Age",
+ylab = "Salaries",
+col = "black",
+border = "blue",
+horizontal = TRUE,
+notch = TRUE
+)
+```
+
+```{r}
+hist(Salaries,
+main="Maximum Salaries",
+xlab="Age",
+ylab= "Salaries",
+col="darkgreen",
+freq=FALSE
+)
+```
+
+From ages 28 to around 33 more people seems to earn more from around 3000 - 3200. The data shows that the more energetic one is and young, the salaries are more, while only a handful of them still earn more as the ages progresses.  
+Box Plots
+
+
+```{r}
+library(caret)
+library(tidyverse)
+library(glmnet)
+library(dplyr)
+```
+
+
+```{r}
+df <- read_excel("Data1.xlsx")
+view(df)
+```
+
+
+
+```{r}
+linearMod <- lm(Salaries ~`Years of Experience` +  Age + Region, data=df)  # build linear regression model on full data
+print(linearMod)
+```
+Based on the outcome it shous that the Intercept of the salaries is = 1711.423 which is Beta zero. while Beta one is 92.792 * Years of Experience, Beta 2 * Age and Beta 3 * Region.
+
+
+
+
+
